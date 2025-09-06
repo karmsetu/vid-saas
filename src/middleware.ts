@@ -7,23 +7,31 @@ export default clerkMiddleware(async (auth, req) => {
     const isAccessingDashboard = currentUrl.pathname === '/home';
     const isApiReq = currentUrl.pathname.startsWith('/api');
 
+    if (req.nextUrl.pathname === '/')
+        return NextResponse.redirect(new URL('/home', req.url));
+
     if (userId && isPublicRoute(req) && !isAccessingDashboard) {
         return NextResponse.redirect(new URL('/home', req.url));
     }
 
     //
     if (!userId) {
-        if (!isPublicAPIRoute(req) && isPublicRoute(req))
-            return NextResponse.redirect(new URL('/signin', req.url));
+        if (!isPublicAPIRoute(req) && !isPublicRoute(req))
+            return NextResponse.redirect(new URL('/sign-in', req.url));
 
         if (isApiReq && !isPublicAPIRoute(req))
-            return NextResponse.redirect(new URL('/signin', req.url));
+            return NextResponse.redirect(new URL('/sign-in', req.url));
     }
 
     return NextResponse.next();
 });
 
-const isPublicRoute = createRouteMatcher(['/signin', '/signup', '/', '/home']);
+const isPublicRoute = createRouteMatcher([
+    '/sign-in',
+    '/sign-up',
+    '/',
+    '/home',
+]);
 
 const isPublicAPIRoute = createRouteMatcher(['/api/videos']);
 
