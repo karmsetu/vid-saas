@@ -17,6 +17,8 @@ services:
         volumes:
             - ./data/db:/var/lib/postgresql/data
         attach: false
+        env_file:
+            - .env.local
 
     adminer:
         image: adminer
